@@ -4,7 +4,7 @@ on:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,3 +23,15 @@ jobs:
           name: MobsManeiros-forge-1.20.1
           path: build/libs/*.jar
           if-no-files-found: error
+      - name: Publish GitHub Release
+        if: github.event.head_commit.message == 'Publish Mobs Maneiros 1.0.0'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: v1.0.0
+          name: Mobs Maneiros 1.0.0 - Forge 1.20.1
+          body: |
+            Primeira versao do Mobs Maneiros para Minecraft 1.20.1 com Forge.
+            Inclui Azeite de oliva, Cachorro, Empresario, Lento e Gogozone.
+          files: build/libs/*.jar
+          overwrite_files: true
+          make_latest: true
