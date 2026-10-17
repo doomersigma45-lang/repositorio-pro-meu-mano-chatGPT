@@ -7,12 +7,13 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.*;
-import net.minecraft.world.entity.animal.TamableAnimal;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.BiomeTags;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
@@ -50,7 +51,7 @@ public class MobsManeiros {
     public static class DogMob extends TamableAnimal {
         protected DogMob(EntityType<? extends TamableAnimal> type, Level level) { super(type,level); }
         @Override protected void registerGoals() {
-            goalSelector.addGoal(0,new FloatGoal(this)); goalSelector.addGoal(1,new SitWhenOrderedToGoal(this)); goalSelector.addGoal(2,new MeleeAttackGoal(this,1,true)); goalSelector.addGoal(3,new FollowOwnerGoal(this,1.1,5,2)); goalSelector.addGoal(4,new BreedGoal(this,1)); goalSelector.addGoal(5,new TemptGoal(this,1,Ingredient.of(Items.BEEF,Items.COOKED_BEEF,Items.PORKCHOP,Items.COOKED_PORKCHOP),false)); goalSelector.addGoal(6,new WaterAvoidingRandomStrollGoal(this,1)); targetSelector.addGoal(1,new OwnerHurtByTargetGoal(this));
+            goalSelector.addGoal(0,new FloatGoal(this)); goalSelector.addGoal(1,new SitWhenOrderedToGoal(this)); goalSelector.addGoal(2,new MeleeAttackGoal(this,1,true)); goalSelector.addGoal(3,new FollowOwnerGoal(this,1.1,5,2,false)); goalSelector.addGoal(4,new BreedGoal(this,1)); goalSelector.addGoal(5,new TemptGoal(this,1,Ingredient.of(Items.BEEF,Items.COOKED_BEEF,Items.PORKCHOP,Items.COOKED_PORKCHOP),false)); goalSelector.addGoal(6,new WaterAvoidingRandomStrollGoal(this,1)); targetSelector.addGoal(1,new OwnerHurtByTargetGoal(this));
         }
         @Override public boolean isFood(ItemStack stack) { return stack.is(Items.BEEF)||stack.is(Items.COOKED_BEEF)||stack.is(Items.PORKCHOP)||stack.is(Items.COOKED_PORKCHOP)||stack.is(Items.CHICKEN)||stack.is(Items.COOKED_CHICKEN); }
         @Override public InteractionResult mobInteract(Player player, InteractionHand hand) {
@@ -73,7 +74,7 @@ public class MobsManeiros {
         @SubscribeEvent public static void attributes(EntityAttributeCreationEvent event) {
             event.put(AZEITE.get(),Mob.createMobAttributes().add(Attributes.MAX_HEALTH,20).add(Attributes.ATTACK_DAMAGE,5).add(Attributes.MOVEMENT_SPEED,.25).build());
             event.put(EMPRESARIO.get(),Mob.createMobAttributes().add(Attributes.MAX_HEALTH,150).add(Attributes.ATTACK_DAMAGE,50).add(Attributes.MOVEMENT_SPEED,.25).build());
-            event.put(LENTO.get(),Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH,60).add(Attributes.ATTACK_DAMAGE,5.5).add(Attributes.MOVEMENT_SPEED,.38).build());
+            event.put(LENTO.get(),Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH,60).add(Attributes.ATTACK_DAMAGE,8.5).add(Attributes.MOVEMENT_SPEED,.38).build());
             event.put(GOGOZONE.get(),Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH,300).add(Attributes.ATTACK_DAMAGE,15).add(Attributes.MOVEMENT_SPEED,.55).build());
             event.put(CACHORRO.get(),Mob.createMobAttributes().add(Attributes.MAX_HEALTH,17).add(Attributes.ATTACK_DAMAGE,3).add(Attributes.MOVEMENT_SPEED,.3).build());
         }
