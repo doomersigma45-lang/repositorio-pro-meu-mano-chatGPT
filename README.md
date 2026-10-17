@@ -1,7 +1,11 @@
 # Mobs Maneiros
 
-Minecraft Java 1.20.1 mod using Forge 47.4.10 and Java 17.
+Mod para Minecraft **1.20.1 com Forge**. Adiciona cinco criaturas com as texturas fornecidas: Azeite de oliva, Cachorro, Empresario, Lento e Gogozone.
 
-Build with `gradlew build`. The resulting mod jar is written to `build/libs/`.
+## Compilar
+Requer Java 17. No Windows, execute `gradlew.bat build`; no Linux/macOS, `./gradlew build`. O JAR compilado fica em `build/libs/`.
 
-The mod adds Azeite de Oliva, Cachorro, Empresário, Lento, and Gogozone. Their textures come from the project's supplied PNGs.
+A cada envio para a branch `main`, o GitHub Actions compila o mod e publica o JAR como artefato da execucao. Abra a aba **Actions**, selecione a compilacao mais recente e baixe **MobsManeiros-forge-1.20.1**.
+
+## Instalar
+Coloque o arquivo JAR em `.minecraft/mods` e inicie o Minecraft 1.20.1 com Forge instalado.
