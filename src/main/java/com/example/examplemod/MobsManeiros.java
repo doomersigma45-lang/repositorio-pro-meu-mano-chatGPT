@@ -7,7 +7,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.*;
-import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
@@ -42,24 +42,38 @@ public class MobsManeiros {
             boolean hostile = getType()==LENTO.get() || getType()==GOGOZONE.get();
             goalSelector.addGoal(0,new FloatGoal(this));
             if (hostile) { goalSelector.addGoal(1,new MeleeAttackGoal(this,getType()==GOGOZONE.get()?1.8:1.35,true)); targetSelector.addGoal(1,new NearestAttackableTargetGoal<>(this,Player.class,true)); }
+            else if (getType()==EMPRESARIO.get()) { goalSelector.addGoal(1,new MeleeAttackGoal(this,1.2,true)); targetSelector.addGoal(1,new NearestAttackableTargetGoal<>(this,Monster.class,true)); targetSelector.addGoal(2,new HurtByTargetGoal(this)); }
             else { goalSelector.addGoal(1,new RandomStrollGoal(this,1)); goalSelector.addGoal(2,new MeleeAttackGoal(this,1,false)); targetSelector.addGoal(1,new HurtByTargetGoal(this)); }
             goalSelector.addGoal(3,new LookAtPlayerGoal(this,Player.class,8)); goalSelector.addGoal(4,new RandomLookAroundGoal(this));
         }
-        @Override public boolean isAggressive() { return getType()==LENTO.get() || getType()==GOGOZONE.get(); }
-        @Override public void tick() { super.tick(); if(!level().isClientSide && getType()==LENTO.get() && getMainHandItem().isEmpty()) setItemSlot(EquipmentSlot.MAINHAND,new ItemStack(Items.STONE_SWORD)); }
+        @Override public boolean isAggressive() { return getType()==LENTO.get() || getType()==GOGOZONE.get() || getType()==EMPRESARIO.get(); }
+        @Override public void tick() {
+            super.tick();
+            if (getType()==LENTO.get() && !level().isClientSide && getMainHandItem().isEmpty()) setItemSlot(EquipmentSlot.MAINHAND,new ItemStack(Items.STONE_SWORD));
+            if (getType()==EMPRESARIO.get()) {
+                setNoGravity(true);
+                fallDistance=0;
+                LivingEntity target=getTarget();
+                if (target!=null && target.isAlive()) {
+                    net.minecraft.world.phys.Vec3 direction=new net.minecraft.world.phys.Vec3(target.getX()-getX(),target.getY()+1.8-getY(),target.getZ()-getZ());
+                    if (direction.lengthSqr()>1.5) setDeltaMovement(getDeltaMovement().scale(.8).add(direction.normalize().scale(.08)));
+                    else setDeltaMovement(getDeltaMovement().scale(.5));
+                    if (!level().isClientSide && tickCount%80==0 && distanceToSqr(target)<24*24) {
+                        net.minecraft.world.entity.LightningBolt bolt=EntityType.LIGHTNING_BOLT.create(level());
+                        if (bolt!=null) { bolt.moveTo(target.getX(),target.getY(),target.getZ()); level().addFreshEntity(bolt); }
+                    }
+                } else {
+                    setDeltaMovement(getDeltaMovement().multiply(.8,.8,.8).add(0,Math.sin(tickCount*.08)*.003,0));
+                }
+            }
+        }
     }
-    public static class DogMob extends TamableAnimal {
-        protected DogMob(EntityType<? extends TamableAnimal> type, Level level) { super(type,level); }
+    public static class DogMob extends Wolf {
+        protected DogMob(EntityType<? extends Wolf> type, Level level) { super(type,level); }
         @Override protected void registerGoals() {
             goalSelector.addGoal(0,new FloatGoal(this)); goalSelector.addGoal(1,new SitWhenOrderedToGoal(this)); goalSelector.addGoal(2,new MeleeAttackGoal(this,1,true)); goalSelector.addGoal(3,new FollowOwnerGoal(this,1.1,5,2,false)); goalSelector.addGoal(4,new BreedGoal(this,1)); goalSelector.addGoal(5,new TemptGoal(this,1,Ingredient.of(Items.BEEF,Items.COOKED_BEEF,Items.PORKCHOP,Items.COOKED_PORKCHOP),false)); goalSelector.addGoal(6,new WaterAvoidingRandomStrollGoal(this,1)); targetSelector.addGoal(1,new OwnerHurtByTargetGoal(this));
         }
         @Override public boolean isFood(ItemStack stack) { return stack.is(Items.BEEF)||stack.is(Items.COOKED_BEEF)||stack.is(Items.PORKCHOP)||stack.is(Items.COOKED_PORKCHOP)||stack.is(Items.CHICKEN)||stack.is(Items.COOKED_CHICKEN); }
-        @Override public InteractionResult mobInteract(Player player, InteractionHand hand) {
-            ItemStack stack=player.getItemInHand(hand);
-            if(!isTame() && stack.is(Items.BONE)) { if(!level().isClientSide){ if(random.nextInt(3)==0){tame(player);navigation.stop();setTarget(null);setOrderedToSit(true);level().broadcastEntityEvent(this,(byte)7);}else level().broadcastEntityEvent(this,(byte)6);if(!player.getAbilities().instabuild)stack.shrink(1);} return InteractionResult.sidedSuccess(level().isClientSide); }
-            if(isTame() && isFood(stack) && !isBaby()) return super.mobInteract(player,hand);
-            return super.mobInteract(player,hand);
-        }
         @Override public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob mate) { return CACHORRO.get().create(level); }
     }
     @Mod.EventBusSubscriber(modid=ID,bus=Mod.EventBusSubscriber.Bus.MOD)

@@ -1,6 +1,7 @@
 package com.example.examplemod;
 
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.WolfModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -13,7 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 public class ClientSetup {
     @SubscribeEvent public static void renderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(MobsManeiros.AZEITE.get(),c->new SkinRenderer<>(c,"azeite_de_oliva"));
-        event.registerEntityRenderer(MobsManeiros.CACHORRO.get(),c->new SkinRenderer<>(c,"cachorro"));
+        event.registerEntityRenderer(MobsManeiros.CACHORRO.get(),DogRenderer::new);
         event.registerEntityRenderer(MobsManeiros.EMPRESARIO.get(),c->new SkinRenderer<>(c,"empresario"));
         event.registerEntityRenderer(MobsManeiros.LENTO.get(),c->new SkinRenderer<>(c,"lento"));
         event.registerEntityRenderer(MobsManeiros.GOGOZONE.get(),c->new SkinRenderer<>(c,"gogo"));
@@ -25,5 +26,12 @@ public class ClientSetup {
             texture=new ResourceLocation(MobsManeiros.ID,"textures/entity/"+name+".png");
         }
         @Override public ResourceLocation getTextureLocation(T entity) { return texture; }
+    }
+    private static class DogRenderer extends MobRenderer<MobsManeiros.DogMob,WolfModel<MobsManeiros.DogMob>> {
+        private final ResourceLocation texture = new ResourceLocation(MobsManeiros.ID,"textures/entity/cachorro.png");
+        DogRenderer(net.minecraft.client.renderer.entity.EntityRendererProvider.Context context) {
+            super(context,new WolfModel<>(context.bakeLayer(ModelLayers.WOLF)),.4f);
+        }
+        @Override public ResourceLocation getTextureLocation(MobsManeiros.DogMob entity) { return texture; }
     }
 }
