@@ -74,7 +74,7 @@ public class MobsManeiros {
             goalSelector.addGoal(0,new FloatGoal(this)); goalSelector.addGoal(1,new SitWhenOrderedToGoal(this)); goalSelector.addGoal(2,new MeleeAttackGoal(this,1,true)); goalSelector.addGoal(3,new FollowOwnerGoal(this,1.1,5,2,false)); goalSelector.addGoal(4,new BreedGoal(this,1)); goalSelector.addGoal(5,new TemptGoal(this,1,Ingredient.of(Items.BEEF,Items.COOKED_BEEF,Items.PORKCHOP,Items.COOKED_PORKCHOP),false)); goalSelector.addGoal(6,new WaterAvoidingRandomStrollGoal(this,1)); targetSelector.addGoal(1,new OwnerHurtByTargetGoal(this));
         }
         @Override public boolean isFood(ItemStack stack) { return stack.is(Items.BEEF)||stack.is(Items.COOKED_BEEF)||stack.is(Items.PORKCHOP)||stack.is(Items.COOKED_PORKCHOP)||stack.is(Items.CHICKEN)||stack.is(Items.COOKED_CHICKEN); }
-        @Override public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob mate) { return CACHORRO.get().create(level); }
+        @Override public DogMob getBreedOffspring(ServerLevel level, AgeableMob mate) { return CACHORRO.get().create(level); }
     }
     @Mod.EventBusSubscriber(modid=ID,bus=Mod.EventBusSubscriber.Bus.MOD)
     public static class ModEvents {
